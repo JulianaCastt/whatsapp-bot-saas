@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - WhatsApp Bot SaaS</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; padding: 20px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+    </style>
+</head>
+<body>
+
+    <h2>Usuarios</h2>
+    <table id="usersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Telefone</th>
+                <th>Criado em</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Mensagens</h2>
+    <table id="messagesTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User ID</th>
+                <th>Mensagem</th>
+                <th>Recebido</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Webhooks Recebidos</h2>
+    <table id="webhooksTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Payload</th>
+                <th>Recebido em</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // Funcao para buscar dados e preencher tabelas
+        function fetchData() {
+            $.get('/users', function(data) {
+                let usersHtml = '';
+                data.forEach(user => {
+                    usersHtml += `<tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.phone}</td>
+                        <td>${user.created_at}</td>
+                    </tr>`;
+                });
+                $('#usersTable tbody').html(usersHtml);
+            });
+
+            $.get('/messages', function(data) {
+                let messagesHtml = '';
+                data.forEach(msg => {
+                    messagesHtml += `<tr>
+                        <td>${msg.id}</td>
+                        <td>${msg.user_id}</td>
+                        <td>${msg.message}</td>
+                        <td>${msg.received}</td>
+                    </tr>`;
+                });
+                $('#messagesTable tbody').html(messagesHtml);
+            });
+
+            $.get('/webhooks', function(data) {
+                let webhooksHtml = '';
+                data.forEach(hook => {
+                    webhooksHtml += `<tr>
+                        <td>${hook.id}</td>
+                        <td>${hook.event_type}</td>
+                        <td>${JSON.stringify(hook.payload)}</td>
+                        <td>${hook.received_at}</td>
+                    </tr>`;
+                });
+                $('#webhooksTable tbody').html(webhooksHtml);
+            });
+        }
+
+        // Carregar os dados ao abrir a pagina
+        $(document).ready(fetchData);
+    </script>
+
+</body>
+</html>
